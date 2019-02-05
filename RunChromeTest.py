@@ -1,5 +1,6 @@
 from selenium import webdriver
 import os
+import time
 
 class RunChromeTest():
     baseUrl = 'https://letskodeit.teachable.com/pages/practice'
@@ -47,6 +48,31 @@ class RunChromeTest():
         pageSource = self.driver.page_source
         #Browser Close / Quit
         self.driver.quit()
+    
+    def clickAndSendKeys(self):
+        loginLink = self.driver.find_element_by_xpath('//div[@id="navbar"]//a[@href="/sign_in"]')
+        loginLink.click()
+
+        ## Universal Timer work if not found
+        self.driver.implicitly_wait(10)
+        
+        emailField = self.driver.find_element_by_id('user_email')
+        emailField.send_keys('test')
+
+        passwordField = self.driver.find_element_by_id('user_password')
+        passwordField.send_keys('test')
+
+        time.sleep(3)
+
+        emailField.clear()
+
+        time.sleep(3)
+
+        passwordField.clear()
+
+        self.driver.quit()
+
+        
 
 
 
@@ -57,4 +83,4 @@ class RunChromeTest():
     
 
 ff = RunChromeTest()
-ff.browserInter()
+ff.clickAndSendKeys()
