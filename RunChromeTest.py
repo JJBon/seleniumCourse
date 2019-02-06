@@ -2,7 +2,11 @@ from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.select import Select
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import *
 from utilities.HandyWrappers import HandyWrappers
+from wait_types.ExplicitWaitType import ExplicitWaitType
 import os
 import time
 
@@ -245,8 +249,50 @@ class RunChromeTest():
         courseElement.click()
         time.sleep(2)
         self.driver.quit()
+    
+    def testExplicitWaitExpedia(self):
+        self.driver.implicitly_wait(.5)
+        self.driver.find_element_by_id("tab-flight-tab-hp").click()
+        self.driver.find_element_by_id("flight-origin-hp-flight").send_keys("SFO")
+        self.driver.find_element_by_id("flight-destination-hp-flight").send_keys("NYC")
+        self.driver.find_element_by_id("flight-returning-hp-flight").send_keys("03/15/2019")
+        initDate = self.driver.find_element_by_id("flight-departing-hp-flight")
+        initDate.send_keys("02/20/2019")
+        initDate.send_keys(Keys.RETURN)
+
+        wait = WebDriverWait(self.driver,10,poll_frequency=1,
+                            ignored_exceptions=
+                            [
+                                NoSuchElementException,
+                                ElementNotVisibleException,
+                                ElementNotSelectableException
+                            ]
+                            )
+        element = wait.until(EC.element_to_be_clickable((By.ID,"stopFilter_stops-0")))
+        element.click()
+
+        time.sleep(2)
+        self.driver.quit()
+    
+    def testExplicitWaitExpedia2(self):
+        self.driver.implicitly_wait(.5)
+        wait = ExplicitWaitType(self.driver)
+        self.driver.find_element_by_id("tab-flight-tab-hp").click()
+        self.driver.find_element_by_id("flight-origin-hp-flight").send_keys("SFO")
+        self.driver.find_element_by_id("flight-destination-hp-flight").send_keys("NYC")
+        self.driver.find_element_by_id("flight-returning-hp-flight").send_keys("03/15/2019")
+        initDate = self.driver.find_element_by_id("flight-departing-hp-flight")
+        initDate.send_keys("02/20/2019")
+        initDate.send_keys(Keys.RETURN)
+
+        element = wait.waitForElement("stopFilter_stops-0")
+        element.click()
+
+        time.sleep(2)
+        self.driver.quit()       
+    
 
 
 #ff = RunChromeTest(customUrl="https://www.expedia.com")
-ff = RunChromeTest()
-ff.testDynamic()
+ff = RunChromeTest(customUrl="https://www.expedia.com")
+ff.testExplicitWaitExpedia2()
