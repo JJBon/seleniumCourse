@@ -1,6 +1,8 @@
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.by import By
 from selenium.webdriver.support.select import Select
+from utilities.HandyWrappers import HandyWrappers
 import os
 import time
 
@@ -55,7 +57,7 @@ class RunChromeTest():
         #Browser Close / Quit
         self.driver.quit()
     
-    def clickAndSendKeys(self):
+    def login(self):
         loginLink = self.driver.find_element_by_xpath('//div[@id="navbar"]//a[@href="/sign_in"]')
         loginLink.click()
 
@@ -63,20 +65,23 @@ class RunChromeTest():
         self.driver.implicitly_wait(10)
         
         emailField = self.driver.find_element_by_id('user_email')
-        emailField.send_keys('test')
+        emailField.send_keys('123@gmail.com')
 
         passwordField = self.driver.find_element_by_id('user_password')
-        passwordField.send_keys('test')
+        passwordField.send_keys('123890')
 
-        time.sleep(3)
+        loginButton = self.driver.find_element_by_name('commit')
+        loginButton.click()         
 
-        emailField.clear()
+        # time.sleep(3)
 
-        time.sleep(3)
+        # emailField.clear()
 
-        passwordField.clear()
+        # time.sleep(3)
 
-        self.driver.quit()
+        # passwordField.clear()
+
+        #self.driver.quit()
 
     def googleQuery(self):
         self.driver.maximize_window()
@@ -206,10 +211,42 @@ class RunChromeTest():
         time.sleep(1)
         self.driver.quit()
     
-    def genWrappers(self):
-        
+    def useWrappers(self):
+        hw = HandyWrappers(self.driver)
+        textField = hw.getElement("name")
+        textField.send_keys("Test")
+        time.sleep(2)
+        textField2 = hw.getElement("//input[@id='name']",locatorType="xpath")
+        textField2.clear()
+        time.sleep(2)
+
+        self.driver.quit()
+    
+    def elementPresentCheck(self):
+        hw = HandyWrappers(self.driver)
+        elementResult1 = hw.isElementPresent("name",By.ID)
+        print(str(elementResult1))
+
+        elementResult2 = hw.elementPresenceCheck("//input[@id='name']",By.XPATH)
+        print(str(elementResult2))
+
+    def testDynamic(self):
+        self.driver.maximize_window()
+        self.login()
+
+        #Search Courses
+        searchBox = self.driver.find_element_by_id('search-courses')
+        searchBox.send_keys("JavaScript")
+
+        #Select Course
+        _course = "//div[contains(@class,'course-listing-title') and contains(text(),'{0}')]"
+        _courseLocator = _course.format("JavaScript for beginners")
+        courseElement = self.driver.find_element_by_xpath(_courseLocator)
+        courseElement.click()
+        time.sleep(2)
+        self.driver.quit()
 
 
 #ff = RunChromeTest(customUrl="https://www.expedia.com")
 ff = RunChromeTest()
-ff.getAttributes()
+ff.testDynamic()
