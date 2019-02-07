@@ -6,6 +6,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import *
 from utilities.HandyWrappers import HandyWrappers
+from utilities.Logger import Logger
 from wait_types.ExplicitWaitType import ExplicitWaitType
 import os
 import time
@@ -289,10 +290,119 @@ class RunChromeTest():
         element.click()
 
         time.sleep(2)
-        self.driver.quit()       
-    
+        self.driver.quit()    
 
+    def expediaChooseDate(self):
+        self.driver.implicitly_wait(.5)
+        self.driver.find_element_by_id("tab-flight-tab-hp").click()
+        departingField = self.driver.find_element_by_id("flight-departing-hp-flight")
+        departingField.click()
+        dateToSelect = self.driver.find_element_by_xpath("//table[contains(@class,'datepicker')]//button[@data-day='28']")
+        dateToSelect.click()
+        time.sleep(3)
+        self.driver.quit()
+
+    def takeScreenshot(self):
+        loginLink = self.driver.find_element_by_xpath('//div[@id="navbar"]//a[@href="/sign_in"]')
+        loginLink.click()
+
+        ## Universal Timer work if not found
+        self.driver.implicitly_wait(10)
+        
+        emailField = self.driver.find_element_by_id('user_email')
+        emailField.send_keys('12345@gmail.com')
+
+        passwordField = self.driver.find_element_by_id('user_password')
+        passwordField.send_keys('123890')
+
+        loginButton = self.driver.find_element_by_name('commit')
+        loginButton.click()  
+        destinationFileName = "/Users/juanjosebonilla/Desktop/Sistemas/WebProjects/SeleniumCourse/Logs/a.png"
+
+        try:
+            self.driver.save_screenshot(destinationFileName)
+            print("Screenshot saved to directory --> :: " + destinationFileName)
+        except NotADirectoryError:
+            print("Not a directory issue")
+    
+    def screenshotByInterface(self):
+        logger = Logger(self.driver)
+        logger.takeScreenshot()
+
+        time.sleep(2)
+        self.driver.quit()
+
+    def excecuteJavaScript(self):
+        self.driver.execute_script("window.location = 'https://letskodeit.teachable.com/pages/practice';")
+        element = self.driver.execute_script("return document.getElementById('name');")
+        element.send_keys("Test")
+
+    def getWindowSize(self):
+        self.driver.implicitly_wait(3)
+        height = self.driver.execute_script("return window.innerHeight;")
+        width = self.driver.execute_script("return window.innerWidth;")
+        print("Height: " + str(height))
+        print("Width: " + str(width))
+        self.driver.quit()
+
+    def scrollElement(self):
+        self.driver.implicitly_wait(3)
+
+        # Scroll Down
+        self.driver.execute_script("window.scrollBy(0,1000);")
+        time.sleep(3)
+
+        # Scroll Up
+        self.driver.execute_script("window.scrollBy(0,-1000);")
+        time.sleep(3)
+
+        # Scroll Element Into View
+        element = self.driver.find_element_by_id("mousehover")
+        self.driver.execute_script("arguments[0].scrollIntoView(true);",element)
+        time.sleep(2)
+        self.driver.execute_script("window.scrollBy(0,-150);")
+
+        # Native Way to Scroll Element Into View
+        time.sleep(2)
+        self.driver.execute_script("window.scrollBy(0,-1000);")
+        location = element.location_once_scrolled_into_view
+        print("Location: " + str(location))
+
+    def switchToWindow(self):
+        self.driver.maximize_window()
+
+        # Find parent handle -> Main Window
+        parentHandle = self.driver.current_window_handle
+        print("Parent Handle: " + parentHandle)
+
+        # Find open window button and click it
+        self.driver.find_element_by_id("openwindow").click()
+        time.sleep(2)
+
+        # Fin all handles, the should be two handles after clicking open window button
+        handles = self.driver.window_handles
+
+        # Switch to window and search course
+        for handle in handles:
+            print("Handle: " + handle)
+            if handle not in parentHandle:
+                self.driver.switch_to.window(handle)
+                print("Switched to window:: " + handle)
+                searchBox = self.driver.find_element(By.ID,"search-courses")
+                #searchBox = self.driver.find_element("search-courses")
+                searchBox.send_keys("python")
+                time.sleep(2)
+                self.driver.close()
+                break
+
+        # Switch back to the parent handle
+        self.driver.switch_to.window(parentHandle)
+        self.driver.find_element_by_id("name").send_keys("Test Successful")
+
+        time.sleep(3)
+        self.driver.quit()
+        
 
 #ff = RunChromeTest(customUrl="https://www.expedia.com")
-ff = RunChromeTest(customUrl="https://www.expedia.com")
-ff.testExplicitWaitExpedia2()
+ff = RunChromeTest()
+ff.switchToWindow()
