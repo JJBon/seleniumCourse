@@ -4,6 +4,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.select import Select
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver import ActionChains
 from selenium.common.exceptions import *
 from utilities.HandyWrappers import HandyWrappers
 from utilities.Logger import Logger
@@ -401,8 +402,51 @@ class RunChromeTest():
 
         time.sleep(3)
         self.driver.quit()
-        
+
+    def switchToIframe(self):
+        self.driver.execute_script("window.scrollBy(0,1000);")
+
+        # Switch to frame using Id
+        self.driver.switch_to.frame("courses-iframe")
+
+        # Switch to frame using name
+
+        # Swith to frame using numbers
+        time.sleep(2)
+        # Search course
+        searchBox = self.driver.find_element(By.ID, "search-courses")
+        searchBox.send_keys("python")
+        time.sleep(2)
+
+        # Switch back to parent frame
+        self.driver.switch_to_default_content()
+        self.driver.execute_script("window.scrollBy(0,-1000);")
+        time.sleep(2)
+        self.driver.find_element_by_id("name").send_keys("Test Succesful")
+
+    def hoverToElement(self):
+        self.driver.implicitly_wait(3)
+        self.driver.execute_script("window.scrollBy(0,600);")
+        time.sleep(2)
+        element = self.driver.find_element_by_id("mousehover")
+        itemToClickLocator = ".//div[@class='mouse-hover-content']//a[text()='Top']"
+        topLink = self.driver.find_element_by_xpath(itemToClickLocator)
+    
+
+        try:
+            actions = ActionChains(self.driver)
+            actions.move_to_element(element).perform()
+            print("Mouse Hovered on element")
+            time.sleep(2)
+            topLink = self.driver.find_element_by_xpath(itemToClickLocator)
+            actions.move_to_element(topLink).click().perform()
+            print("Item Clicked")
+        except:
+            print("Mpuse Hover failed on element")
+        finally:
+            time.sleep(2)
+            self.driver.quit()
 
 #ff = RunChromeTest(customUrl="https://www.expedia.com")
 ff = RunChromeTest()
-ff.switchToWindow()
+ff.hoverToElement()
