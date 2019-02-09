@@ -447,6 +447,44 @@ class RunChromeTest():
             time.sleep(2)
             self.driver.quit()
 
+    def dragAndDrop(self):
+        self.driver.implicitly_wait(3)
+        
+        self.driver.get("https://jqueryui.com/droppable/")
+        self.driver.switch_to.frame(0)
+
+        fromElement = self.driver.find_element_by_id("draggable")
+        toElement = self.driver.find_element_by_id("droppable")
+        time.sleep(2)
+        try:
+            actions = ActionChains(self.driver)
+            #actions.drag_and_drop(fromElement,toElement).perform()
+            actions.click_and_hold(fromElement).move_to_element(toElement).release().perform()
+            print("Drag And Drop Element Successfull")
+            time.sleep(2)
+        except:
+            print("Drag and Drop failed on element")
+        finally:
+            time.sleep(2)
+            self.driver.quit()
+
+    def slider(self):
+        self.driver.implicitly_wait(3)
+        
+        self.driver.get("https://jqueryui.com/slider/")
+        self.driver.switch_to.frame(0)
+
+        element = self.driver.find_element_by_xpath("//div[@id='slider']//span")
+        time.sleep(2)
+        try:
+            actions = ActionChains(self.driver)
+            actions.drag_and_drop_by_offset(element,100,0).perform()
+            print("Sliding Element Sucessful")
+            time.sleep(2)
+        except:
+            print("Sliding failed on element")
+
+
 #ff = RunChromeTest(customUrl="https://www.expedia.com")
 ff = RunChromeTest()
-ff.hoverToElement()
+ff.slider()
