@@ -1,0 +1,4 @@
+02/10/2019 08:14:30 PM: -Logger INFO: info message
+02/10/2019 08:14:30 PM: -Logger WARNING: warn message
+02/10/2019 08:14:30 PM: -Logger ERROR: error message
+02/10/2019 08:14:30 PM: -Logger CRITICAL: critical message

@@ -487,4 +487,6 @@ class RunChromeTest():
 
 #ff = RunChromeTest(customUrl="https://www.expedia.com")
 ff = RunChromeTest()
-ff.slider()
+#ff.slider()
+
+Logger(ff.driver).runWithConfig()
